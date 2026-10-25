@@ -1,0 +1,67 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'polyganpath@gmail.com' ||
+        request.auth.token.email == 'kotlasaikarthik81@gmail.com' ||
+        request.auth.token.email == 'admin.examcell@campus.edu' ||
+        (request.auth.token.email is string && request.auth.token.email.matches('.*admin.*'))
+      );
+    }
+
+    // Validate image mime type and max size of 10MB
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // Validate documents (pdf, images) max 15MB
+    function isValidDocument() {
+      return (
+        request.resource.contentType.matches('image/.*') ||
+        request.resource.contentType == 'application/pdf'
+      ) && request.resource.size < 15 * 1024 * 1024;
+    }
+
+    // Lost & Found images:
+    // Anyone signed in can read; authenticated users can upload images up to 10MB into their user folder or lost-found-images
+    match /lost-found-images/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidImage();
+      allow update, delete: if isSignedIn() && (isAdmin() || request.auth.uid == resource.metadata.uploadedBy);
+    }
+
+    // Avatars:
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && (request.auth.uid == userId || isAdmin()) && isValidImage();
+      allow delete: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Student documents & permissions:
+    match /student-documents/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidDocument();
+      allow delete: if isAdmin();
+    }
+
+    match /permission-attachments/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidDocument();
+      allow delete: if isSignedIn();
+    }
+
+    // General user files:
+    match /general/{userId}/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidDocument();
+      allow update, delete: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+  }
+}

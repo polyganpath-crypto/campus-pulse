@@ -1,0 +1,10 @@
+{
+  "name": "1 CampusHub",
+  "description": "An all-in-one student portal for academics, placement tracking, document management, campus communication, and collaborative project building.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

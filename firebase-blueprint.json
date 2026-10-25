@@ -1,0 +1,438 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with role-based access information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "uid": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["student", "faculty", "coordinator", "admin"] },
+        "rollNumber": { "type": "string", "maxLength": 32 },
+        "department": { "type": "string", "maxLength": 128 },
+        "year": { "type": "string", "maxLength": 32 },
+        "semester": { "type": "number" },
+        "section": { "type": "string", "maxLength": 16 },
+        "cgpa": { "type": "number" },
+        "designation": { "type": "string", "maxLength": 128 },
+        "cabinLocation": { "type": "string", "maxLength": 128 },
+        "avatarUrl": { "type": "string", "maxLength": 512 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["uid", "name", "email", "role", "department", "createdAt"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Institutional and departmental announcements",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "description": { "type": "string", "maxLength": 4096 },
+        "category": { "type": "string", "maxLength": 64 },
+        "authorId": { "type": "string", "maxLength": 128 },
+        "authorName": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "priority": { "type": "string", "enum": ["normal", "important", "urgent"] },
+        "expiresAt": { "type": "string", "maxLength": 64 },
+        "department": { "type": "string", "maxLength": 128 },
+        "authority": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["title", "description", "category", "authorId", "authorName", "createdAt", "priority", "expiresAt"]
+    },
+    "LostItem": {
+      "title": "LostItem",
+      "description": "Campus lost or found item record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "type": { "type": "string", "enum": ["lost", "found"] },
+        "title": { "type": "string", "maxLength": 256 },
+        "itemName": { "type": "string", "maxLength": 256 },
+        "description": { "type": "string", "maxLength": 2048 },
+        "category": { "type": "string", "maxLength": 64 },
+        "location": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 32 },
+        "imageUrl": { "type": "string", "maxLength": 1024 },
+        "status": { "type": "string", "enum": ["open", "claimed", "returned"] },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "reportedBy": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["type", "description", "category", "location", "date", "status", "createdAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User specific academic and campus notification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "message": { "type": "string", "maxLength": 2048 },
+        "type": { "type": "string", "maxLength": 64 },
+        "read": { "type": "boolean" },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["userId", "title", "message", "type", "createdAt"]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Student subject attendance record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "subject": { "type": "string", "maxLength": 128 },
+        "subjectCode": { "type": "string", "maxLength": 32 },
+        "facultyName": { "type": "string", "maxLength": 128 },
+        "totalClasses": { "type": "number" },
+        "attendedClasses": { "type": "number" },
+        "percentage": { "type": "number" },
+        "isLab": { "type": "boolean" },
+        "credits": { "type": "number" }
+      },
+      "required": ["studentId", "subject", "totalClasses", "attendedClasses", "percentage"]
+    },
+    "SemesterResultRecord": {
+      "title": "SemesterResultRecord",
+      "description": "Student semester course result record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "semester": { "type": "number" },
+        "subject": { "type": "string", "maxLength": 128 },
+        "credits": { "type": "number" },
+        "grade": { "type": "string", "maxLength": 16 },
+        "gradePoint": { "type": "number" },
+        "SGPA": { "type": "number" }
+      },
+      "required": ["studentId", "semester", "subject", "credits", "grade", "gradePoint", "SGPA"]
+    },
+    "PermissionRecord": {
+      "title": "PermissionRecord",
+      "description": "Digital permission letter and gate pass request",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "requestId": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "reason": { "type": "string", "maxLength": 2048 },
+        "destination": { "type": "string", "maxLength": 256 },
+        "fromDate": { "type": "string", "maxLength": 32 },
+        "toDate": { "type": "string", "maxLength": 32 },
+        "status": { "type": "string", "enum": ["draft", "pending", "pending_mentor", "mentor_approved", "pending_hod", "approved", "rejected"] },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["studentId", "reason", "destination", "fromDate", "toDate", "status", "createdAt"]
+    },
+    "Examination": {
+      "title": "Examination",
+      "description": "Course examination details",
+      "type": "object",
+      "properties": {
+        "examId": { "type": "string", "maxLength": 128 },
+        "subjectCode": { "type": "string", "maxLength": 32 },
+        "subject": { "type": "string", "maxLength": 128 },
+        "department": { "type": "string", "maxLength": 128 },
+        "semester": { "type": "number" },
+        "examDate": { "type": "string", "maxLength": 32 },
+        "startTime": { "type": "string", "maxLength": 32 },
+        "endTime": { "type": "string", "maxLength": 32 },
+        "reportingTime": { "type": "string", "maxLength": 32 },
+        "status": { "type": "string", "enum": ["scheduled", "ongoing", "completed", "published"] },
+        "isPublished": { "type": "boolean" },
+        "totalCandidates": { "type": "number" },
+        "assignedHalls": { "type": "array" }
+      },
+      "required": ["examId", "subjectCode", "subject", "examDate", "startTime", "reportingTime", "status"]
+    },
+    "ExamHall": {
+      "title": "ExamHall",
+      "description": "Examination hall and seat configuration",
+      "type": "object",
+      "properties": {
+        "hallId": { "type": "string", "maxLength": 128 },
+        "building": { "type": "string", "maxLength": 128 },
+        "floor": { "type": "string", "maxLength": 64 },
+        "roomNumber": { "type": "string", "maxLength": 64 },
+        "totalSeats": { "type": "number" },
+        "rowsCount": { "type": "number" },
+        "colsCount": { "type": "number" },
+        "inChargeFaculty": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["hallId", "building", "floor", "roomNumber", "totalSeats"]
+    },
+    "SeatingAssignment": {
+      "title": "SeatingAssignment",
+      "description": "Student seat allocation in an exam hall",
+      "type": "object",
+      "properties": {
+        "assignmentId": { "type": "string", "maxLength": 128 },
+        "examId": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "rollNumber": { "type": "string", "maxLength": 32 },
+        "department": { "type": "string", "maxLength": 128 },
+        "section": { "type": "string", "maxLength": 16 },
+        "hallId": { "type": "string", "maxLength": 128 },
+        "rowNumber": { "type": "number" },
+        "seatNumber": { "type": "number" },
+        "assignedAt": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["allocated", "verified", "absent"] }
+      },
+      "required": ["assignmentId", "examId", "studentId", "rollNumber", "hallId", "seatNumber", "status"]
+    },
+    "CampusEvent": {
+      "title": "CampusEvent",
+      "description": "University event announcement and registrations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 128 },
+        "category": { "type": "string", "enum": ["Symposium", "Hackathon", "Cultural", "Workshop", "Placement Drive", "Sports"] },
+        "description": { "type": "string", "maxLength": 2048 },
+        "date": { "type": "string", "maxLength": 32 },
+        "time": { "type": "string", "maxLength": 32 },
+        "venue": { "type": "string", "maxLength": 128 },
+        "organizer": { "type": "string", "maxLength": 128 },
+        "isCampusWide": { "type": "boolean" },
+        "isUrgent": { "type": "boolean" },
+        "registeredCount": { "type": "number" },
+        "userRegistered": { "type": "boolean" },
+        "registrationDeadline": { "type": "string", "maxLength": 32 }
+      },
+      "required": ["id", "title", "category", "date", "venue"]
+    },
+    "CampusLocation": {
+      "title": "CampusLocation",
+      "description": "Geographical and architectural points of interest on campus",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "category": { "type": "string", "maxLength": 64 },
+        "building": { "type": "string", "maxLength": 128 },
+        "floor": { "type": "string", "maxLength": 64 },
+        "roomNumber": { "type": "string", "maxLength": 32 },
+        "description": { "type": "string", "maxLength": 1024 },
+        "landmarks": { "type": "string", "maxLength": 512 }
+      },
+      "required": ["id", "name", "category", "building", "floor", "description", "landmarks"]
+    },
+    "CampusNavEvent": {
+      "title": "CampusNavEvent",
+      "description": "Campus navigation calendar events and symposiums",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 128 },
+        "description": { "type": "string", "maxLength": 2048 },
+        "date": { "type": "string", "maxLength": 32 },
+        "time": { "type": "string", "maxLength": 32 },
+        "venue": { "type": "string", "maxLength": 128 },
+        "organizer": { "type": "string", "maxLength": 128 },
+        "category": { "type": "string", "maxLength": 64 },
+        "registrationStatus": { "type": "string", "enum": ["open", "closing_soon", "closed", "registered"] },
+        "registeredCount": { "type": "number" }
+      },
+      "required": ["id", "title", "date", "time", "venue", "organizer", "category", "registrationStatus", "registeredCount"]
+    },
+    "CampusAlert": {
+      "title": "CampusAlert",
+      "description": "Urgent real-time notifications and emergency alerts across campus",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 128 },
+        "message": { "type": "string", "maxLength": 2048 },
+        "type": { "type": "string", "maxLength": 64 },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "title", "message", "type", "isRead", "createdAt"]
+    },
+    "StudentQuery": {
+      "title": "StudentQuery",
+      "description": "Student question or grievance with administrative responses and status tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "queryId": { "type": "string", "maxLength": 128 },
+        "studentUid": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "studentEmail": { "type": "string", "format": "email", "maxLength": 128 },
+        "studentRollNumber": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 256 },
+        "description": { "type": "string", "maxLength": 5000 },
+        "category": { "type": "string", "maxLength": 64 },
+        "department": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["SUBMITTED", "UNDER REVIEW", "NEEDS INFORMATION", "ANSWERED", "CLOSED"] },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["queryId", "studentUid", "title", "description", "category", "department", "status", "createdAt", "updatedAt"]
+    },
+    "ExamNotification": {
+      "title": "ExamNotification",
+      "description": "Exam seating arrangement notifications and 30-minute hall alerts",
+      "type": "object",
+      "properties": {
+        "notificationId": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "rollNumber": { "type": "string", "maxLength": 32 },
+        "examId": { "type": "string", "maxLength": 128 },
+        "subject": { "type": "string", "maxLength": 256 },
+        "examDate": { "type": "string", "maxLength": 32 },
+        "startTime": { "type": "string", "maxLength": 32 },
+        "reportingTime": { "type": "string", "maxLength": 32 },
+        "hallInfo": { "type": "string", "maxLength": 128 },
+        "rowNumber": { "type": "number" },
+        "seatNumber": { "type": "number" },
+        "scheduledTime": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["scheduled", "delivered", "dismissed", "viewed"] },
+        "isUrgent30MinAlert": { "type": "boolean" }
+      },
+      "required": ["notificationId", "studentId", "rollNumber", "examId", "subject", "hallInfo", "status"]
+    },
+    "AcademicDeadline": {
+      "title": "AcademicDeadline",
+      "description": "Upcoming deadlines for submissions, fee payments, and exam forms",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "dueDate": { "type": "string", "maxLength": 64 },
+        "category": { "type": "string", "maxLength": 64 },
+        "priority": { "type": "string", "enum": ["high", "medium", "low"] },
+        "department": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["id", "title", "dueDate", "category", "priority"]
+    },
+    "StudentDue": {
+      "title": "StudentDue",
+      "description": "Student dues and clearances record for exam admit card eligibility",
+      "type": "object",
+      "properties": {
+        "dueId": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "rollNumber": { "type": "string", "maxLength": 32 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "department": { "type": "string", "maxLength": 128 },
+        "duesCategory": { "type": "string", "maxLength": 64 },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "cleared", "waived"] },
+        "dueDate": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["dueId", "studentId", "rollNumber", "duesCategory", "amount", "status"]
+    },
+    "AdminNotice": {
+      "title": "AdminNotice",
+      "description": "Official notices and memos published by the examination cell or administration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "content": { "type": "string", "maxLength": 4096 },
+        "category": { "type": "string", "maxLength": 64 },
+        "priority": { "type": "string", "enum": ["high", "medium", "low", "urgent"] },
+        "issuedBy": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "title", "content", "category", "priority", "issuedBy", "date"]
+    }
+  },
+  "firestore": {
+    "/student_queries/{queryId}": {
+      "schema": "StudentQuery",
+      "description": "Student query tickets, admin responses, and status history"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and role metadata"
+    },
+    "/exam_notifications/{notificationId}": {
+      "schema": "ExamNotification",
+      "description": "Automated 30-minute exam seating notifications"
+    },
+    "/student_dues/{dueId}": {
+      "schema": "StudentDue",
+      "description": "Student academic and fee clearances"
+    },
+    "/admin_notices/{noticeId}": {
+      "schema": "AdminNotice",
+      "description": "Official admin and examination notices"
+    },
+    "/academic_deadlines/{deadlineId}": {
+      "schema": "AcademicDeadline",
+      "description": "Upcoming academic deadlines"
+    },
+    "/announcements/{announcementId}": {
+      "schema": "Announcement",
+      "description": "Campus announcements by faculty and admin"
+    },
+    "/lostItems/{itemId}": {
+      "schema": "LostItem",
+      "description": "Campus lost possessions and recovered found items"
+    },
+    "/lostFoundItems/{itemId}": {
+      "schema": "LostItem",
+      "description": "Campus lost possessions and recovered found items"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "Direct student notifications and alerts"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": "AttendanceRecord",
+      "description": "Student attendance tracking records"
+    },
+    "/results/{resultId}": {
+      "schema": "SemesterResultRecord",
+      "description": "Student semester academic scores and SGPA/CGPA"
+    },
+    "/permissions/{permissionId}": {
+      "schema": "PermissionRecord",
+      "description": "Digital student permission requests and gate passes"
+    },
+    "/permission_requests/{requestId}": {
+      "schema": "PermissionRecord",
+      "description": "Digital permission requests with mentor and HOD review workflow"
+    },
+    "/examinations/{examId}": {
+      "schema": "Examination",
+      "description": "Official examinations scheduled by admin/exam-cell"
+    },
+    "/exam_halls/{hallId}": {
+      "schema": "ExamHall",
+      "description": "Physical exam halls with room numbers and seating capacities"
+    },
+    "/seating_assignments/{assignmentId}": {
+      "schema": "SeatingAssignment",
+      "description": "Individual exam seat allocations"
+    },
+    "/campus_events/{eventId}": {
+      "schema": "CampusEvent",
+      "description": "Campus-wide events and symposium announcements"
+    },
+    "/campus_locations/{locationId}": {
+      "schema": "CampusLocation",
+      "description": "Physical campus facilities, lecture halls, and laboratory locations"
+    },
+    "/campus_nav_events/{eventId}": {
+      "schema": "CampusNavEvent",
+      "description": "Scheduled events mapped to campus navigation waypoints"
+    },
+    "/campus_alerts/{alertId}": {
+      "schema": "CampusAlert",
+      "description": "Active campus emergency and broadcast alerts"
+    }
+  }
+}

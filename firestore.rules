@@ -1,0 +1,215 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------
+    // Helper Functions
+    // ---------------------------------------------------------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Admin check: reads role from user's document, known admin emails, or unauthenticated dev preview
+    function isAdmin() {
+      return (
+        !isSignedIn() ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+        request.auth.token.email in ['polyganpath@gmail.com', 'kotlasaikarthik81@gmail.com', 'admin.examcell@campus.edu', 'admin@campus.edu'] ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Faculty check: reads role from user's document or known faculty emails
+    function isFaculty() {
+      return (
+        !isSignedIn() ||
+        isAdmin() ||
+        request.auth.token.email in ['faculty@campus.edu', 'priya.swaminathan@campus.edu'] ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['faculty', 'admin'])
+      );
+    }
+
+    // ---------------------------------------------------------
+    // 1. Users Collection
+    // ---------------------------------------------------------
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if isOwner(userId) ? (
+        // Ordinary users cannot promote themselves to admin
+        (!incoming().diff(existing()).affectedKeys().hasAny(['role']) || isAdmin())
+      ) : isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------
+    // 2. Admins collection for role checking
+    // ---------------------------------------------------------
+    match /admins/{adminId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------
+    // 3. Announcements Collection
+    // ---------------------------------------------------------
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // ---------------------------------------------------------
+    // 4. Lost & Found Items
+    // ---------------------------------------------------------
+    match /lostItems/{itemId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    match /lostFoundItems/{itemId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // ---------------------------------------------------------
+    // 5. Notifications Collection
+    // ---------------------------------------------------------
+    match /notifications/{notificationId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // ---------------------------------------------------------
+    // 6. Attendance Collection
+    // ---------------------------------------------------------
+    match /attendance/{attendanceId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ---------------------------------------------------------
+    // 7. Results Collection
+    // ---------------------------------------------------------
+    match /results/{resultId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ---------------------------------------------------------
+    // 8. Permissions Collection (permissions & permission_requests)
+    // ---------------------------------------------------------
+    match /permissions/{permissionId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    match /permission_requests/{requestId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // ---------------------------------------------------------
+    // 9. Examinations, Seating & Venues
+    // ---------------------------------------------------------
+    match /examinations/{examId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /exam_halls/{hallId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /seating_assignments/{assignmentId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /exam_notifications/{notificationId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /student_dues/{dueId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /admin_notices/{noticeId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /academic_deadlines/{deadlineId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /campus_events/{eventId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /campus_nav_events/{eventId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /campus_locations/{locationId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /campus_alerts/{alertId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ---------------------------------------------------------
+    // 10. Student Queries Portal
+    // ---------------------------------------------------------
+    match /student_queries/{queryId} {
+      allow read: if true;
+
+      allow create: if (
+        incoming().title is string && incoming().title.size() > 0 && incoming().title.size() <= 200 &&
+        incoming().description is string && incoming().description.size() > 0 && incoming().description.size() <= 5000 &&
+        incoming().category is string &&
+        incoming().department is string &&
+        incoming().status == 'SUBMITTED'
+      );
+
+      allow update: if true;
+      allow delete: if isAdmin();
+
+      match /messages/{messageId} {
+        allow read: if true;
+        allow create, update, delete: if true;
+      }
+    }
+
+    // ---------------------------------------------------------
+    // Connection Validation Test Document
+    // ---------------------------------------------------------
+    match /test/{testId} {
+      allow read, write: if true;
+    }
+  }
+}
+
+
